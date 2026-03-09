@@ -110,10 +110,14 @@ class MainWindow(QMainWindow):
     # Functions
 
     def showUIElements(self):
+        if not self.taskList.currentText():
+            self.descriptionField.setEnabled(False)
+            return
         if self.taskList.currentText() not in self.storedTasks:
             self.deleteButton.setVisible(False)
             self.label1.setVisible(True)
             self.label1.setText("Task will be added automatically")
+            self.descriptionField.setEnabled(True)
         else:
             self.deleteButton.setVisible(True)
             self.label1.setVisible(True)
@@ -127,8 +131,9 @@ class MainWindow(QMainWindow):
     def addTask (self):
         task = self.taskList.currentText()
         if not task:
-            self.label1.setText("Task field can't be empty!")
+            self.label1.setText("Add task before modifying description")
             self.descriptionField.setEnabled(False)
+            self.lineEdit.setFocus()
             return
         if task not in self.storedTasks:
             self.storedTasks[task] = ""
@@ -178,6 +183,7 @@ class MainWindow(QMainWindow):
             self.taskList.clear()
             self.storedTasks.clear()
             self.label1.setText("Add task by typing it's name in the text field!")
+            self.descriptionField.setEnabled(False) 
             print("Deleted all tasks")
         elif currentIndex == 0:
             print("Deleting Index is 0")
@@ -206,8 +212,9 @@ class MainWindow(QMainWindow):
                 if self.taskList.currentText() == "":
                     self.taskList.setCurrentIndex(self.taskList.currentIndex() + 1)
                 self.label1.setText(f"Successfully added {len(self.storedTasks) + 1} tasks")
+                self.descriptionField.setEnabled(True)
             else:
-                self.label1.setText("Loading Tasks are identical to current tasks!")
+                self.label1.setText("Loading tasks are identical to current tasks!")
                 return
         except FileNotFoundError:
             self.label1.setText(
@@ -227,6 +234,8 @@ class MainWindow(QMainWindow):
         self.storedTasks.clear()
         self.taskList.clear()
         self.label1.setText("Add task by typing it's name in the text field!")
+        self.descriptionField.setEnabled(False) 
+        self.lineEdit.setFocus()
 
 
 if __name__ == "__main__":
