@@ -24,22 +24,22 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon("appIcon.png"))
         self.hbox = QHBoxLayout()
         self.vbox = QVBoxLayout()
-        self.deleteButton = QPushButton("Delete current task", self)
-        self.saveButton = QPushButton("Save", self)
-        self.loadButton = QPushButton("Load", self)
-        self.taskList = QComboBox(self)
-        self.descriptionField = QTextEdit(self)
-        self.button = QPushButton("Print tasks", self)
-        self.button2 = QPushButton("Clear tasks", self)
+        self.delete_button = QPushButton("Delete current task", self)
+        self.save_button = QPushButton("Save", self)
+        self.load_button = QPushButton("Load", self)
+        self.task_list = QComboBox(self)
+        self.description_field = QTextEdit(self)
+        self.print_dic_button = QPushButton("Print tasks", self)
+        self.clear_dic_button = QPushButton("Clear tasks", self)
         self.label1 = QLabel(self)
-        self.storedTasks = {
+        self.stored_tasks = {
             "Example task": "Example description",
             "Example task2": "Example description2",
             "Buy milk": "2 liters",
             "Call mom": "at 18:00",
             "Meeting": "tomorrow 10am",
         }
-        #self.completer = QCompleter(self.storedTasks, self)
+        #self.completer = QCompleter(self.stored_tasks, self)
         #self.completer.setCaseSensitivity(Qt.CaseSensitive)
         self.initUI()
         self.initWidgets()
@@ -48,58 +48,59 @@ class MainWindow(QMainWindow):
     def initUI(self):
         self.label1.setStyleSheet("font-size:15px;")
         # Delete Button
-        self.deleteButton.setHidden(True)
+        self.delete_button.setHidden(True)
 
         # ComboBox List Of Tasks
-        self.taskList.setEditable(True)
-        self.taskList.setInsertPolicy(QComboBox.InsertAtBottom)
+        self.task_list.setEditable(True)
+        self.task_list.setInsertPolicy(QComboBox.InsertAtBottom)
 
         # Text Field
-        self.descriptionField.setStyleSheet("font-size:15px;")
-        self.descriptionField.setUndoRedoEnabled(True)
-        self.descriptionField.setPlaceholderText("No description yet!")
+        self.description_field.setStyleSheet("font-size:15px;")
+        self.description_field.setUndoRedoEnabled(True)
+        self.description_field.setPlaceholderText("No description yet!")
 
-        self.lineEdit = self.taskList.lineEdit()
+        self.lineEdit = self.task_list.lineEdit()
 
         # Runs (Inits Application) If Dictionary Is Not Empty At The Start Of The Program
-        if self.storedTasks:
-            self.deleteButton.setVisible(True)
-            self.label1.setText("Enter to modify the task!")
-            for task in self.storedTasks:
-                self.taskList.addItem(task)
-            self.displayDescription()
+        if self.stored_tasks:
+            self.delete_button.setVisible(True)
+            self.label1.setText("Modifying is available")
+            for task in self.stored_tasks:
+                self.task_list.addItem(task)
+            self.display_description()
 
     def initConnections(self):
         # Delete Confirmation Button
-        self.deleteButton.clicked.connect(self.showMessage)
+        self.delete_button.clicked.connect(self.show_message)
         # Load Buttons
-        self.saveButton.clicked.connect(self.saveTask)
-        self.loadButton.clicked.connect(self.loadTask)
+        self.save_button.clicked.connect(self.save_task)
+        self.load_button.clicked.connect(self.load_task)
 
         # Debug Buttons
-        self.button.clicked.connect(self.printDic)
-        self.button2.clicked.connect(self.clearTasks)
+        self.print_dic_button.clicked.connect(self.print_dic)
+        self.clear_dic_button.clicked.connect(self.clear_tasks)
 
         # Task Logic Connections
-        self.taskList.currentTextChanged.connect(self.displayDescription)
-        self.taskList.currentTextChanged.connect(self.showUIElements)
+        self.task_list.currentTextChanged.connect(self.display_description)
+        self.task_list.currentTextChanged.connect(self.show_UI_elements)
         if self.lineEdit is not None:
-            self.lineEdit.editingFinished.connect(self.addTask)
-            self.lineEdit.returnPressed.connect(self.returnPressedDoubleItemFix)
+            self.lineEdit.editingFinished.connect(self.add_task)
+            self.lineEdit.editingFinished.connect(self.task_UI)
+            self.lineEdit.returnPressed.connect(self.return_pressed_double_item_fix)
 
-        self.descriptionField.textChanged.connect(self.addDescription)
+        self.description_field.textChanged.connect(self.add_description)
 
     def initWidgets(self):
         # Widgets placing
-        self.vbox.addWidget(self.taskList)
-        self.vbox.addWidget(self.descriptionField)
-        self.vbox.addWidget(self.button)
-        self.vbox.addWidget(self.button2)
+        self.vbox.addWidget(self.task_list)
+        self.vbox.addWidget(self.description_field)
+        self.vbox.addWidget(self.print_dic_button)
+        self.vbox.addWidget(self.clear_dic_button)
         self.vbox.addWidget(self.label1)
 
-        self.hbox.addWidget(self.saveButton)
-        self.hbox.addWidget(self.deleteButton)
-        self.hbox.addWidget(self.loadButton)
+        self.hbox.addWidget(self.save_button)
+        self.hbox.addWidget(self.delete_button)
+        self.hbox.addWidget(self.load_button)
         self.vbox.addStretch(1)
         self.vbox.addLayout(self.hbox)
 
@@ -109,58 +110,62 @@ class MainWindow(QMainWindow):
 
     # Functions
 
-    def showUIElements(self):
-        if not self.taskList.currentText():
-            self.descriptionField.setEnabled(False)
+    def show_UI_elements(self):
+        if not self.task_list.currentText():
+            self.description_field.setEnabled(False)
             return
-        if self.taskList.currentText() not in self.storedTasks:
-            self.deleteButton.setVisible(False)
+        if self.task_list.currentText() not in self.stored_tasks:
+            self.delete_button.setVisible(False)
             self.label1.setVisible(True)
             self.label1.setText("Task will be added automatically")
-            self.descriptionField.setEnabled(True)
+            self.description_field.setEnabled(True)
         else:
-            self.deleteButton.setVisible(True)
+            self.delete_button.setVisible(True)
             self.label1.setVisible(True)
-            self.label1.setText("Enter to modify the task")
+            self.label1.setText("Modifying is available")
 
-    def returnPressedDoubleItemFix (self):
-        task = self.taskList.currentText()
-        self.taskList.removeItem(self.taskList.currentIndex())
-        self.taskList.setCurrentText(task)
+    def return_pressed_double_item_fix (self):
+        task = self.task_list.currentText()
+        self.task_list.removeItem(self.task_list.currentIndex())
+        self.task_list.setCurrentText(task)
 
-    def addTask (self):
-        task = self.taskList.currentText()
+    def add_task (self):
+        task = self.task_list.currentText()
         if not task:
             self.label1.setText("Add task before modifying description")
-            self.descriptionField.setEnabled(False)
+            self.description_field.setEnabled(False)
             self.lineEdit.setFocus()
             return
-        if task not in self.storedTasks:
-            self.storedTasks[task] = ""
-            self.taskList.addItem(task)
-            self.taskList.setCurrentText(task)
+        if task not in self.stored_tasks:
+            self.stored_tasks[task] = ""
+            self.task_list.addItem(task)
+            self.task_list.setCurrentText(task)
             self.label1.setText("Task added!")
             print("Task Added")
-        self.descriptionField.setFocus()
-        self.deleteButton.setVisible(True)
-        self.descriptionField.setEnabled(True)
-        cursor = self.descriptionField.textCursor()
-        cursor.movePosition(cursor.End)
-        self.descriptionField.setTextCursor(cursor)
 
-    def addDescription (self):
-        if self.taskList.currentText() in self.storedTasks:
-            self.storedTasks[self.taskList.currentText()] = self.descriptionField.toPlainText()
+    def task_UI (self):
+        self.description_field.setFocus()
+        self.delete_button.setVisible(True)
+        self.description_field.setEnabled(True)
+        cursor = self.description_field.textCursor()
+        cursor.movePosition(cursor.End)
+        self.description_field.setTextCursor(cursor)
+
+
+    def add_description (self):
+        if self.task_list.currentText() in self.stored_tasks:
+            self.stored_tasks[self.task_list.currentText()] = self.description_field.toPlainText()
             self.label1.setVisible(False)
 
-    def displayDescription(self):
+    def display_description(self):
         # Displays Description When Task (CurrentText/CurrentIndex) In ComboBox Changes
-        self.descriptionField.setText(self.storedTasks.get(self.taskList.currentText()))
-        cursor = self.descriptionField.textCursor()
+        self.description_field.setText(self.stored_tasks.get(self.task_list.currentText()))
+        cursor = self.description_field.textCursor()
         cursor.movePosition(cursor.End)
-        self.descriptionField.setTextCursor(cursor)
+        self.description_field.setTextCursor(cursor)
+        print(1)
 
-    def showMessage(self):
+    def show_message(self):
         # Confirmation Message on Task Deletion
         reply = QMessageBox.question(
             self,
@@ -170,49 +175,49 @@ class MainWindow(QMainWindow):
             QMessageBox.Ok,
         )
         if reply == QMessageBox.Ok:
-            self.deleteTask()
+            self.delete_task()
 
-    def deleteTask(self):
+    def delete_task(self):
         # Deletes Current Task And Sets currentIndex - 1
-        currentIndex = self.taskList.currentIndex()
-        currentText = self.taskList.currentText()
+        currentIndex = self.task_list.currentIndex()
+        currentText = self.task_list.currentText()
 
-        self.storedTasks.pop(currentText, None)
-        self.taskList.removeItem(currentIndex)
-        if not self.storedTasks:
-            self.taskList.clear()
-            self.storedTasks.clear()
+        self.stored_tasks.pop(currentText, None)
+        self.task_list.removeItem(currentIndex)
+        if not self.stored_tasks:
+            self.task_list.clear()
+            self.stored_tasks.clear()
             self.label1.setText("Add task by typing it's name in the text field!")
-            self.descriptionField.setEnabled(False) 
+            self.description_field.setEnabled(False) 
             print("Deleted all tasks")
         elif currentIndex == 0:
             print("Deleting Index is 0")
-            self.taskList.setCurrentIndex(currentIndex)
+            self.task_list.setCurrentIndex(currentIndex)
         elif currentIndex != 0:
-            self.taskList.setCurrentIndex(currentIndex - 1)
+            self.task_list.setCurrentIndex(currentIndex - 1)
             print("Deleting Index is not 0")
         self.lineEdit.setFocus()
 
-    def saveTask(self):
+    def save_task(self):
         # Saves (Writes) Task To File tasksSaved.json
         with open("tasksSaved.json", "w", encoding="utf-8") as f:
-            json.dump(self.storedTasks, f)
+            json.dump(self.stored_tasks, f)
 
-    def loadTask(self):
+    def load_task(self):
         # Loads Dictionary File With Tasks If The File Exists
         try:
-            with open("tasksSaved.json", "r", encoding="utf-8") as storedTasksSave:
-                copy = json.load(storedTasksSave)
-            if self.storedTasks != copy:
-                self.storedTasks.clear()
-                self.taskList.clear()
+            with open("tasksSaved.json", "r", encoding="utf-8") as stored_tasks_save:
+                copy = json.load(stored_tasks_save)
+            if self.stored_tasks != copy:
+                self.stored_tasks.clear()
+                self.task_list.clear()
                 for task, description in copy.items():
-                    self.storedTasks[task] = description
-                    self.taskList.addItem(task)
-                if self.taskList.currentText() == "":
-                    self.taskList.setCurrentIndex(self.taskList.currentIndex() + 1)
-                self.label1.setText(f"Successfully added {len(self.storedTasks) + 1} tasks")
-                self.descriptionField.setEnabled(True)
+                    self.stored_tasks[task] = description
+                    self.task_list.addItem(task)
+                if self.task_list.currentText() == "":
+                    self.task_list.setCurrentIndex(self.task_list.currentIndex() + 1)
+                self.label1.setText(f"Successfully added {len(self.stored_tasks) + 1} tasks")
+                self.description_field.setEnabled(True)
             else:
                 self.label1.setText("Loading tasks are identical to current tasks!")
                 return
@@ -225,16 +230,16 @@ class MainWindow(QMainWindow):
         except IOError as e:
             self.label1.setText(f"An I/O error occurred: {e}")
 
-    def printDic(self):
+    def print_dic(self):
         # Debug Button: Prints Dictionary
-        print(self.storedTasks)
+        print(self.stored_tasks)
 
-    def clearTasks(self):
+    def clear_tasks(self):
         # Debug Button: Clears Dictionary And ComboBox
-        self.storedTasks.clear()
-        self.taskList.clear()
+        self.stored_tasks.clear()
+        self.task_list.clear()
         self.label1.setText("Add task by typing it's name in the text field!")
-        self.descriptionField.setEnabled(False) 
+        self.description_field.setEnabled(False) 
         self.lineEdit.setFocus()
 
 
