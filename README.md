@@ -1,2 +1,2 @@
 # TaskNotes
-## Application to store tasks with descriptions to it.
+## Application to store tasks with descriptions to them.
