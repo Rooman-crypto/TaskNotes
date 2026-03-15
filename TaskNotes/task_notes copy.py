@@ -75,6 +75,8 @@ class MainWindow(QMainWindow):
         # ComboBox List Of Tasks
         self.task_list.setEditable(True)
         self.task_list.setInsertPolicy(QComboBox.InsertAtBottom)
+        self.task_list.setInsertPolicy(QComboBox.NoInsert)
+
 
         # Text Field
         self.description_field.setStyleSheet("font-size:15px;")
@@ -110,7 +112,7 @@ class MainWindow(QMainWindow):
         if self.line_edit is not None:
             self.line_edit.editingFinished.connect(self.add_task)
             self.line_edit.editingFinished.connect(self.task_ui)
-            self.line_edit.returnPressed.connect(self.return_pressed_double_item_fix)
+            #self.line_edit.returnPressed.connect(self.return_pressed_double_item_fix)
         self.task_list.currentTextChanged.connect(self.display_description)
 
         self.description_field.textChanged.connect(self.add_description)
@@ -208,9 +210,11 @@ class MainWindow(QMainWindow):
         """
         Adds priority level to the current task
         """
-        self.stored_tasks[self.task_list.currentText()][
-            "priority"
-        ] = self.priority_level.currentText()
+        if self.task_list.currentText() in self.stored_tasks:
+
+            self.stored_tasks[self.task_list.currentText()][
+                "priority"
+                ] = self.priority_level.currentText()
 
     def add_description(self):
         """Adds description to current task in comboBox lineEdit"""
